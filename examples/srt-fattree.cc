@@ -125,8 +125,8 @@ char * toString(int a, int b, int c, int d) {
 void ShowPacketAndTuple(Ptr<Node> s)
 {
 	std::cout << "Receive Packet Sum(Including Ipv4, Arp packets): " << s->m_packetNum << std::endl;
-	std::cout << "Receive Tuple Packet Num (Excluding Arp packets):" << std::endl;
-
+	//std::cout << "Receive Tuple Packet Num (Excluding Arp packets):" << std::endl;
+	uint32_t tuplePostcardNum=0;
 	uint32_t i = 0;
 	tuple_t* tp = &s->m_tuple;
 	tuple_key_container_t * tc;
@@ -136,16 +136,21 @@ void ShowPacketAndTuple(Ptr<Node> s)
 		while (tc->next != NULL)
 		{
 			tc = tc->next;
-			std::cout << "hash: " << i << " key(x) packet count:" << tc->packet_count << std::endl;
+			tuplePostcardNum++;
+			//std::cout << "hash: " << i << " key(x) packet count:" << tc->packet_count << std::endl;
+			//std::cout <<"key:"<<tc->key<<std::endl;
 		}
 	}
+	std::cout<<"Everflow postcard count:"<<tuplePostcardNum<<std::endl;
+	std::cout<<"Everflow distinct flow count:"<<tp->distinct_flow_count<<std::endl;
 
 }
 // Output keysight
 //
 void ShowKeysight(Ptr<Node> s)
 {
-	std::cout << "Receive Keysight Packet Num (Excluding Arp packets):" << std::endl;
+	//std::cout << "Receive Keysight Packet Num (Excluding Arp packets):" << std::endl;
+	uint32_t keysightPostcardNum=0;
 	uint32_t i = 0;
 	keysight_t* ks=&s->m_keysight;
 	keysight_key_container_t * kc;
@@ -155,9 +160,14 @@ void ShowKeysight(Ptr<Node> s)
 		while (kc->next != NULL)
 		{
 			kc = kc->next;
-			std::cout << "hash: " << i << " key(x) packet count:" << kc->packet_count<<std::endl;
+			if(kc->packet_count>0)
+				keysightPostcardNum++;
+			//std::cout << "hash: " << i << " key(x) packet count:" << kc->packet_count<<std::endl;
 		}
 	}
+	std::cout<<"Keysight postcard num:"<<keysightPostcardNum<<std::endl;
+	std::cout<<"Keysight distinct behavior count:"<<ks->distinct_behavior_count<<std::endl;
+	std::cout<<"Keysight postcard count:"<<ks->postcard_count<<std::endl;
 }
 
 int
@@ -198,7 +208,7 @@ main(int argc, char *argv[])
 	int port = 9;
 	unsigned int packetSize = 3;		// send packet data size (byte)
 	double interval = 1; // send packet interval time (ms)
-	unsigned maxPackets = 2; // send packet max number
+	unsigned maxPackets = 100; // send packet max number
 
 
 	// Initialize parameters for Csma and PointToPoint protocol
@@ -453,7 +463,7 @@ main(int argc, char *argv[])
 	{
 		for (j = 0; j < num_core; j++)
 		{
-			std::cout << "Core Switch [group,core] [" << i << "," << j << "]:";
+			std::cout << "Core Switch [group,core] [" << i << "," << j << "]:"<<std::endl;
 			ShowPacketAndTuple(core[i].Get(j));
 			ShowKeysight(core[i].Get(j));
 		}
@@ -464,7 +474,7 @@ main(int argc, char *argv[])
 	{
 		for (j = 0; j < num_agg; j++)
 		{
-			std::cout << "Agg Switch [pod,agg] [" << i << "," << j << "]:";
+			std::cout << "Agg Switch [pod,agg] [" << i << "," << j << "]:"<<std::endl;
 			ShowPacketAndTuple(agg[i].Get(j));
 			ShowKeysight(agg[i].Get(j));
 		}
@@ -475,7 +485,7 @@ main(int argc, char *argv[])
 	{
 		for (j = 0; j < num_edge; j++)
 		{
-			std::cout << "Edge Switch [pod,edge] [" << i << "," << j << "]:";
+			std::cout << "Edge Switch [pod,edge] [" << i << "," << j << "]:"<<std::endl;
 			ShowPacketAndTuple(edge[i].Get(j));
 			ShowKeysight(edge[i].Get(j));
 		}
@@ -492,7 +502,7 @@ main(int argc, char *argv[])
 		{
 			for (k = 0; k < num_host; k++)
 			{
-				std::cout << "Host [pod,edge,host] [" << i << "," << j << "," << k << "]:";
+				std::cout << "Host [pod,edge,host] [" << i << "," << j << "," << k << "]:"<<std::endl;
 				ShowPacketAndTuple(host[i][j].Get(k));
 				ShowKeysight(host[i][j].Get(k));
 			}
