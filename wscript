@@ -20,7 +20,8 @@ def build(bld):
     all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_ENABLED_MODULES']]
     module = bld.create_ns3_module('keysight', ['antenna', 'aodv', 'applications', 'bridge', 'buildings', 'config-store', 'core', 'csma', 'csma-layout', 'dsdv', 'dsr', 'energy', 'fd-net-device', 'flow-monitor', 'internet', 'internet-apps', 'lr-wpan', 'lte', 'mesh', 'mobility', 'mpi', 'netanim', 'network', 'nix-vector-routing', 'olsr', 'point-to-point', 'point-to-point-layout', 'propagation', 'sixlowpan', 'spectrum', 'stats', 'test', 'topology-read', 'traffic-control', 'uan', 'virtual-net-device', 'wave', 'wifi', 'wimax'])
     module.source = [
-	'model/key-hash.cc'
+	#'model/key-hash.cc'
+	 #'model/node.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('keysight')
@@ -30,7 +31,8 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'keysight'
     headers.source = [
-	'model/key-hash.h'
+	#'model/key-hash.h'
+	#'model/node.h'
         ]
 
     if bld.env['ENABLE_EXAMPLES']:

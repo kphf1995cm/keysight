@@ -19,8 +19,7 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/csma-module.h"
 #include "ns3/ipv4-nix-vector-helper.h"
-
-
+#include "ns3/keysight.h"
 /*
 - The code is constructed in the following order:
 1. Creation of Node Containers
@@ -107,17 +106,57 @@ char * toString(int a, int b, int c, int d) {
 	return address;
 }
 
-typedef std::unordered_map<uint64_t, uint32_t>::iterator TupleIter_t;
+//typedef std::unordered_map<uint32_t, uint32_t>::iterator TupleIter_t;
 
 //Output switch received packet info
 //
-void ShowSwitchInfos(Ptr<Node> s)
+/*void ShowSwitchInfos(Ptr<Node> s)
 {
 	std::cout << "Receive Packet Sum: " << s->m_packetNum << std::endl;
 	std::cout << "Receive Tuple Packet Num (TupleHash Num):" << std::endl;
 	for (TupleIter_t iter = s->m_tupleNum.begin(); iter != s->m_tupleNum.end(); iter++)
 	{
 		std::cout << iter->first << " " << iter->second << std::endl;
+	}
+}*/
+
+//Output tuple
+//
+void ShowPacketAndTuple(Ptr<Node> s)
+{
+	std::cout << "Receive Packet Sum(Including Ipv4, Arp packets): " << s->m_packetNum << std::endl;
+	std::cout << "Receive Tuple Packet Num (Excluding Arp packets):" << std::endl;
+
+	uint32_t i = 0;
+	tuple_t* tp = &s->m_tuple;
+	tuple_key_container_t * tc;
+	for (; i < TP_KEY_CONTAINER_SIZE; i++)
+	{
+		tc = &tp->key_container[i];
+		while (tc->next != NULL)
+		{
+			tc = tc->next;
+			std::cout << "hash: " << i << " key(x) packet count:" << tc->packet_count << std::endl;
+		}
+	}
+
+}
+// Output keysight
+//
+void ShowKeysight(Ptr<Node> s)
+{
+	std::cout << "Receive Keysight Packet Num (Excluding Arp packets):" << std::endl;
+	uint32_t i = 0;
+	keysight_t* ks=&s->m_keysight;
+	keysight_key_container_t * kc;
+	for (; i < BF_KEY_CONTAINER_SIZE; i++)
+	{
+		kc = &ks->key_container[i];
+		while (kc->next != NULL)
+		{
+			kc = kc->next;
+			std::cout << "hash: " << i << " key(x) packet count:" << kc->packet_count<<std::endl;
+		}
 	}
 }
 
@@ -415,7 +454,8 @@ main(int argc, char *argv[])
 		for (j = 0; j < num_core; j++)
 		{
 			std::cout << "Core Switch [group,core] [" << i << "," << j << "]:";
-			ShowSwitchInfos(core[i].Get(j));
+			ShowPacketAndTuple(core[i].Get(j));
+			ShowKeysight(core[i].Get(j));
 		}
 	}
 
@@ -425,7 +465,8 @@ main(int argc, char *argv[])
 		for (j = 0; j < num_agg; j++)
 		{
 			std::cout << "Agg Switch [pod,agg] [" << i << "," << j << "]:";
-			ShowSwitchInfos(agg[i].Get(j));
+			ShowPacketAndTuple(agg[i].Get(j));
+			ShowKeysight(agg[i].Get(j));
 		}
 	}
 
@@ -435,7 +476,8 @@ main(int argc, char *argv[])
 		for (j = 0; j < num_edge; j++)
 		{
 			std::cout << "Edge Switch [pod,edge] [" << i << "," << j << "]:";
-			ShowSwitchInfos(edge[i].Get(j));
+			ShowPacketAndTuple(edge[i].Get(j));
+			ShowKeysight(edge[i].Get(j));
 		}
 	}
 
@@ -451,7 +493,8 @@ main(int argc, char *argv[])
 			for (k = 0; k < num_host; k++)
 			{
 				std::cout << "Host [pod,edge,host] [" << i << "," << j << "," << k << "]:";
-				ShowSwitchInfos(host[i][j].Get(k));
+				ShowPacketAndTuple(host[i][j].Get(k));
+				ShowKeysight(host[i][j].Get(k));
 			}
 		}
 	}
@@ -462,6 +505,7 @@ main(int argc, char *argv[])
 	unsigned long end = getTickCount();
 	std::cout << "Simulate Running time: " << end - simulate_start << "ms" << std::endl;
 	std::cout << "Running time: " << end - start << "ms" << std::endl;
+	std::cout<<"Keysight Running Successfully!!!"<<std::endl;
 	return 0;
 }
 
