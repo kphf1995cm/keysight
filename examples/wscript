@@ -3,5 +3,6 @@
 def build(bld):
     obj0 = bld.create_ns3_program('keysight-example', ['keysight', 'csma', 'internet', 'applications', 'internet-apps'])
     obj0.source=['srt-fattree.cc']
+    #obj0.source=['ns3-fattree.cc']
     #obj1 = bld.create_ns3_program('keysight-test', ['keysight', 'csma', 'internet', 'applications', 'internet-apps'])
     #obj1.source = ['keysight-test.cc']
