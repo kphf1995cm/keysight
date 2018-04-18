@@ -24,6 +24,7 @@
 #include "ns3/ipv4-nix-vector-helper.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/keysight.h"
+#include "ns3/keysight_para.h"
 
  /*
  - The code is constructed in the following order:
@@ -204,6 +205,13 @@ main(int argc, char *argv[])
 	cmd.AddValue("flow", "Flow Distribution Type [0 exponential] [1 normal] [2 constant] [3 28distribution]", flowType);
 	cmd.AddValue("minpackets", "Flow min packets", minPackets);
 	cmd.AddValue("maxpackets", "Flow max packets", maxPackets);
+	cmd.AddValue("bfalg", "[0 BSBF][1 BSBFSD][2 RLBSBF][3 STABLE_BF][4 IDEAL_BF][5 KEYSIGHT_SBF]", KeysightPara::g_BF_ALG);
+	cmd.AddValue("bfsize", "", KeysightPara::g_BF_SIZE);
+	cmd.AddValue("bfnum", "", KeysightPara::g_BF_NUM);
+	cmd.AddValue("bfmax", "", KeysightPara::g_BF_MAX);
+	cmd.AddValue("perwindowpkt", "", KeysightPara::g_PACKET_PER_WINDOW);
+	cmd.AddValue("windownum", "", KeysightPara::g_WINDOW_NUM);
+	cmd.AddValue("bucketnum", "", KeysightPara::g_BUCKET_NUM);
 	cmd.Parse(argc, argv);
 
 	//=========== Define parameters based on value of k ===========//
